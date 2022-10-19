@@ -47,6 +47,7 @@ export function setData(data, storeKey) {
 
 export function getData(storeKey) {
     const values = JSON.parse(localStorage.getItem(storeKey));
+    console.log(values);
     if (values) {
         return new Map(values.map(e => [e.id, e]));
     } else {

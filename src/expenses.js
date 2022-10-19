@@ -29,10 +29,14 @@ function onFormSubmit(event) {
     if (Object.values(data).every(x => x)) {
 
         const id = editMode ? currId : getId();
-
+        const date = new Date(data.date);
+        
         const expense = {
             id,
-            ...data
+            date,
+            name: data.name,
+            category: Number(data.category),
+            amount: Number(data.amount)
         };
         store.set(expense.id, expense);
 
@@ -88,19 +92,20 @@ function deleteExpense(row) {
     if (confirm("Are you sure you want to DELETE this Expense?")) {
         row.remove();
         store.delete(row.id);
+        setData(store, STORAGE_EXPENSES_KEY);
     }
 }
 
 function createExpenseRow(expense) {
     const { id, date, name, category, amount } = expense;
 
-    const parsedDate = new Date(date);
-    const strDate = `${parsedDate.getDate()}.${parsedDate.toLocaleString('en-us', { month: 'short' })}`
+    const d = new Date(date);
+    const strDate = `${d.getDate()}.${d.toLocaleString('en-us', { month: 'short' })}`
 
     let row = tr(
         td(strDate),
         td(name),
-        td(categories[Number(category)]),
+        td(categories[category]),
         td(e('span', { className: 'currency' }, amount)),
         td(e('button', { className: 'editBtn' }, "Edit"), e('button', { className: 'deleteBtn' }, "Delete"))
     );
@@ -108,3 +113,4 @@ function createExpenseRow(expense) {
 
     return row;
 }
+

@@ -29,10 +29,13 @@ function onFormSubmit(event) {
     if (Object.values(data).every(x => x)) {
 
         const id = editMode ? currId : getId();
+        const date = srtToDate(data.month);
 
         const budget = {
             id,
-            ...data
+            date,
+            income: Number(data.income),
+            budget: Number(data.budget)
         };
         store.set(budget.id, budget)
 
@@ -75,8 +78,7 @@ function onRowBtnClick(event) {
 
 function editBudget(row) {
     const budget = store.get(row.id);
-    console.log(budget);
-    form.querySelector('[name="month"]').value = budget.month;
+    form.querySelector('[name="month"]').value = dateToString(new Date(budget.date));
     form.querySelector('[name="income"]').value = budget.income;
     form.querySelector('[name="budget"]').value = budget.budget;
 
@@ -88,15 +90,15 @@ function deleteBudget(row) {
     if (confirm("Are you sure you want to DELETE this Budget?")) {
         row.remove();
         store.delete(row.id);
+        setData(store, STORAGE_BUDGETS_KEY);
     }
 }
 
 function createBudgetRow(data) {
-    const { id, month, income, budget } = data;
+    const { id, date, income, budget } = data;
 
-    const monthIndex = Number(month.slice(0, 2)) - 1;
-    const parsedDate = new Date(month.slice(-4), monthIndex);
-    const strDate = `${parsedDate.toLocaleString('en-us', { month: 'short' })}.${parsedDate.getFullYear()}`
+    let d = new Date(date);
+    const strDate = `${d.toLocaleString('en-us', { month: 'short' })}.${d.getFullYear()}`
 
     let row = tr(
         td(strDate),
@@ -107,4 +109,16 @@ function createBudgetRow(data) {
     row.id = id;
 
     return row;
+}
+
+function dateToString(date) {
+    const str = `${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getFullYear()}`;
+    return str;
+}
+
+function srtToDate(str) {
+    const monthIndex = Number(str.slice(0, 2)) - 1;
+    const year = Number(str.slice(-4));
+    const date = new Date(year, monthIndex);
+    return date;
 }
