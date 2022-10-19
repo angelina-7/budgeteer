@@ -14,8 +14,8 @@ makeOverview();
 
 
 function makeOverview() {
-    const spent = thisMonthExpenses.reduce((acc, curr) => acc + curr.amount, 0);
-    const remaining = thisMonthBudget.budget - spent;
+    let spent = thisMonthExpenses.reduce((acc, curr) => acc + curr.amount, 0);
+    let remaining = thisMonthBudget.budget - spent;
     let savings = thisMonthBudget.income - thisMonthBudget.budget;
     let allMoney = spent + remaining + savings;
 
@@ -25,11 +25,13 @@ function makeOverview() {
 
     let spentPX = (spent / allMoney * 300 | 0);
     if (remaining < 0) {
+        remaining = Math.abs(remaining);
         savings = thisMonthBudget.income - spent;
         allMoney = spent + savings;
 
         remainingBar.className = "ov remain-minus"
-        spentPX = ((spent + remaining) / allMoney * 300 | 0);
+        spentPX = ((spent - remaining) / allMoney * 300 | 0);
+        document.getElementById('remaining-label').textContent = "Overruns"
     }
 
     document.getElementById('spent').textContent = spent;
@@ -37,13 +39,13 @@ function makeOverview() {
     document.getElementById('savings').textContent = savings;
 
     spentBar.style.height =  spentPX + 'px';
-    remainingBar.style.height = (Math.abs(remaining) / allMoney * 300 | 0) + 'px';
-    savingsBar.style.height = (Math.abs(savings) / allMoney * 300 | 0) + 'px';
+    remainingBar.style.height = (remaining / allMoney * 300 | 0) + 'px';
+    savingsBar.style.height = (savings / allMoney * 300 | 0) + 'px';
 
 }
 
 function makeBreakdown() {
-
+    
 }
 
 
