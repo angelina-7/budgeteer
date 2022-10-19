@@ -59,9 +59,6 @@ function makeBreakdown() {
     }
     sumAll = catSums.reduce((acc, curr) => acc + curr, 0);
 
-    console.log(catSums);
-    console.log(sumAll);
-
     for (let i = 0; i < categories.length; i++) {
         const width = (catSums[i] / sumAll * 400);
         const row = createCategoryRow(catSums[i], categories[i], width);
