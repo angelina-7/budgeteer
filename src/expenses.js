@@ -79,7 +79,7 @@ function onRowBtnClick(event) {
 
 function editExpense(row) {
     const expense = store.get(row.id);
-    form.querySelector('[name="date"]').value = expense.date;
+    form.querySelector('[name="date"]').value = dateToString(new Date(expense.date));
     form.querySelector('[name="name"]').value = expense.name;
     form.querySelector('[name="category"]').value = expense.category;
     form.querySelector('[name="amount"]').value = expense.amount;
@@ -114,3 +114,7 @@ function createExpenseRow(expense) {
     return row;
 }
 
+function dateToString(date) {
+    const str = date.toISOString().slice(0,10);
+    return str;
+}

@@ -152,6 +152,10 @@ h2 {
     background-color: rgb(45, 177, 155);
 }
 
+.remain-minus {
+    background-color: rgb(177, 65, 45);
+}
+
 .save {
     background: repeating-linear-gradient(135deg, rgb(74, 115, 161), rgb(74, 115, 161) 20px, #969696 20px, #969696 40px);
 }
