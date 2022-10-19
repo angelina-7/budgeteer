@@ -1,5 +1,6 @@
+const STORAGE_EXPENSES_KEY = 'expenses';
+
 /**
- * 
  * @param {string} type 
  * @param {Object} attrtibutes 
  * @param  {...(string|Node)} content 
@@ -34,10 +35,20 @@ export const categories = [
     "Transport"
 ];
 
+export function getId() {
+    return ('00000000' + Math.random() * 99999999 | 0).toString(16).slice(-8);
+}
+
 export function setData(data) {
-    localStorage.setItem('expenses', JSON.stringify(data));
+    const values = [...data.values()];
+    localStorage.setItem(STORAGE_EXPENSES_KEY, JSON.stringify(values));
 }
 
 export function getData() {
-    return JSON.parse(localStorage.getItem('expenses'));
+    const values = JSON.parse(localStorage.getItem(STORAGE_EXPENSES_KEY));
+    if (values) {
+        return new Map(values.map(e => [e.id, e]));
+    } else {
+        return new Map();
+    }
 }
