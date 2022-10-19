@@ -1,12 +1,17 @@
-import { e, tr, td, categories, setData, getData, getId } from './util';
+import {
+    STORAGE_EXPENSES_KEY, categories,
+    e, tr, td,
+    setData, getData, getId
+} from './util';
+
 
 let editMode = false;
 let currId = null;
 
-const store = getData();
+const store = getData(STORAGE_EXPENSES_KEY);
 
-const tbody = document.querySelector('tbody');
 const form = document.getElementById('new-expense');
+const tbody = document.querySelector('tbody');
 
 hidrate(store);
 
@@ -30,27 +35,34 @@ function onFormSubmit(event) {
     const formData = new FormData(event.target);
     const data = Object.fromEntries(formData);
 
-    const id = editMode ? currId : getId();
+    if (Object.values(data).every(x => x)) {
 
-    const expense = {
-        id,
-        ...data
-    };
-    store.set(expense.id, expense)
+        const id = editMode ? currId : getId();
 
-    const row = createExpenseRow(expense);
+        const expense = {
+            id,
+            ...data
+        };
+        store.set(expense.id, expense)
 
-    if (editMode) {
-        const oldRow = document.getElementById(id);
-        tbody.replaceChild(row, oldRow);
-        editMode = false;
-        currId = null;
+        const row = createExpenseRow(expense);
+
+        if (editMode) {
+            const oldRow = document.getElementById(id);
+            tbody.replaceChild(row, oldRow);
+            editMode = false;
+            currId = null;
+        } else {
+            tbody.appendChild(row);
+        }
+
+        form.reset();
+        setData(store, STORAGE_EXPENSES_KEY);
+
     } else {
-        tbody.appendChild(row);
+        alert("All fields must be filled.");
     }
 
-    form.reset();
-    setData(store);
 };
 
 function onFormCancel(event) {
@@ -90,10 +102,6 @@ function deleteExpense(row) {
 }
 
 function createExpenseRow(expense) {
-    if (!Object.values(expense).every(x => x)) {
-        return;
-    }
-
     const { id, date, name, category, amount } = expense;
 
     const parsedDate = new Date(date);
@@ -105,7 +113,7 @@ function createExpenseRow(expense) {
         td(categories[Number(category)]),
         td(e('span', { className: 'currency' }, amount)),
         td(e('button', { className: 'editBtn' }, "Edit"), e('button', { className: 'deleteBtn' }, "Delete"))
-    )
+    );
     row.id = id;
 
     return row;

@@ -1,4 +1,4 @@
-const STORAGE_EXPENSES_KEY = 'expenses';
+export const STORAGE_EXPENSES_KEY = 'expenses';
 
 /**
  * @param {string} type 
@@ -39,13 +39,13 @@ export function getId() {
     return ('00000000' + Math.random() * 99999999 | 0).toString(16).slice(-8);
 }
 
-export function setData(data) {
+export function setData(data, storeKey) {
     const values = [...data.values()];
-    localStorage.setItem(STORAGE_EXPENSES_KEY, JSON.stringify(values));
+    localStorage.setItem(storeKey, JSON.stringify(values));
 }
 
-export function getData() {
-    const values = JSON.parse(localStorage.getItem(STORAGE_EXPENSES_KEY));
+export function getData(storeKey) {
+    const values = JSON.parse(localStorage.getItem(storeKey));
     if (values) {
         return new Map(values.map(e => [e.id, e]));
     } else {
