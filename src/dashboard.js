@@ -1,6 +1,7 @@
 import {
-    STORAGE_BUDGETS_KEY, STORAGE_EXPENSES_KEY,
-    getData
+    STORAGE_BUDGETS_KEY, STORAGE_EXPENSES_KEY, categories,
+    getData,
+    e
 } from "./util";
 
 const expenses = getData(STORAGE_EXPENSES_KEY);
@@ -11,7 +12,7 @@ const thisMonthBudget = currMonthBudget(today.getMonth(), today.getFullYear());
 const thisMonthExpenses = currMonthExpenses(today.getMonth(), today.getFullYear());
 
 makeOverview();
-
+makeBreakdown();
 
 function makeOverview() {
     let spent = thisMonthExpenses.reduce((acc, curr) => acc + curr.amount, 0);
@@ -38,16 +39,49 @@ function makeOverview() {
     document.getElementById('remaining').textContent = remaining;
     document.getElementById('savings').textContent = savings;
 
-    spentBar.style.height =  spentPX + 'px';
+    spentBar.style.height = spentPX + 'px';
     remainingBar.style.height = (remaining / allMoney * 300 | 0) + 'px';
     savingsBar.style.height = (savings / allMoney * 300 | 0) + 'px';
 
 }
 
 function makeBreakdown() {
-    
+    const breakdownSection = document.getElementById('breakdown');
+
+    let catSums = new Array(categories.length).fill(0);
+    let sumAll;
+    for (const item of thisMonthExpenses) {
+        if (catSums[Number(item.category)]) {
+            catSums[Number(item.category)] += Number(item.amount);
+        } else {
+            catSums[Number(item.category)] = Number(item.amount);
+        }
+    }
+    sumAll = catSums.reduce((acc, curr) => acc + curr, 0);
+
+    console.log(catSums);
+    console.log(sumAll);
+
+    for (let i = 0; i < categories.length; i++) {
+        const width = (catSums[i] / sumAll * 400);
+        const row = createCategoryRow(catSums[i], categories[i], width);
+        breakdownSection.appendChild(row);
+    }
 }
 
+
+function createCategoryRow(catSum, category, width) {
+    const bar = e('span', { className: 'bar' });
+    bar.style.width = width + 'px';
+
+    const row = e('div', { className: 'cat-row' },
+        e('span', { className: 'row label' }, category),
+        e('span', { className: 'row value' }, catSum),
+        e('div', { className: 'bar-area' }, bar)
+    );
+
+    return row;
+}
 
 function currMonthBudget(month, year) {
     return [...budgets.values()].filter((val) => {
