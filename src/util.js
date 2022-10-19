@@ -1,4 +1,5 @@
 export const STORAGE_EXPENSES_KEY = 'expenses';
+export const STORAGE_BUDGETS_KEY = 'budgets';
 
 /**
  * @param {string} type 
@@ -50,5 +51,14 @@ export function getData(storeKey) {
         return new Map(values.map(e => [e.id, e]));
     } else {
         return new Map();
+    }
+}
+
+export function hidrate(store, createRow, tbody) {
+    if (store.length != 0) {
+        for (const [key, value] of store) {
+            const row = createRow(value);
+            tbody.appendChild(row);
+        }
     }
 }

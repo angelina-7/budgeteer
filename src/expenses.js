@@ -1,7 +1,7 @@
 import {
     STORAGE_EXPENSES_KEY, categories,
     e, tr, td,
-    setData, getData, getId
+    hidrate, setData, getData, getId
 } from './util';
 
 
@@ -13,21 +13,12 @@ const store = getData(STORAGE_EXPENSES_KEY);
 const form = document.getElementById('new-expense');
 const tbody = document.querySelector('tbody');
 
-hidrate(store);
+hidrate(store, createExpenseRow, tbody);
 
 form.addEventListener('submit', onFormSubmit);
 form.querySelector('[type="reset"]').addEventListener('click', onFormCancel);
 
 tbody.addEventListener('click', onRowBtnClick);
-
-function hidrate(store) {
-    if (store.length != 0) {
-        for (const [key, value] of store) {
-            const row = createExpenseRow(value);
-            tbody.appendChild(row);
-        }
-    }
-}
 
 function onFormSubmit(event) {
     event.preventDefault();
@@ -43,7 +34,7 @@ function onFormSubmit(event) {
             id,
             ...data
         };
-        store.set(expense.id, expense)
+        store.set(expense.id, expense);
 
         const row = createExpenseRow(expense);
 
@@ -91,7 +82,6 @@ function editExpense(row) {
 
     editMode = true;
     currId = row.id;
-
 }
 
 function deleteExpense(row) {
