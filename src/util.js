@@ -62,3 +62,26 @@ export function hidrate(store, createRow, tbody) {
         }
     }
 }
+
+export function currMonthBudget(budgets, month, year) {
+    return [...budgets.values()].filter((val) => {
+        let currDate = new Date(val.date);
+        return currDate.getFullYear() === year && currDate.getMonth() === month;
+    })[0];
+}
+
+export function currMonthExpenses(expenses, month, year) {
+    return [...expenses.values()].filter((val) => {
+        let currDate = new Date(val.date);
+        return currDate.getFullYear() === year && currDate.getMonth() === month;
+    });
+}
+
+export function sumCurrMonthExpByCategory(thisMonthExp) {
+    let catSums = new Array(categories.length).fill(0);
+    for (const item of thisMonthExp) {
+        catSums[Number(item.category)] += Number(item.amount);
+    }
+
+    return catSums
+}

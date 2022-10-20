@@ -1,15 +1,14 @@
 import {
     STORAGE_BUDGETS_KEY, STORAGE_EXPENSES_KEY, categories,
-    getData,
-    e
+    e, getData, currMonthBudget, currMonthExpenses, sumCurrMonthExpByCategory
 } from "./util";
 
 const expenses = getData(STORAGE_EXPENSES_KEY);
 const budgets = getData(STORAGE_BUDGETS_KEY);
 
 const today = new Date();
-const thisMonthBudget = currMonthBudget(today.getMonth(), today.getFullYear());
-const thisMonthExpenses = currMonthExpenses(today.getMonth(), today.getFullYear());
+const thisMonthBudget = currMonthBudget(budgets, today.getMonth(), today.getFullYear());
+const thisMonthExpenses = currMonthExpenses(expenses, today.getMonth(), today.getFullYear());
 
 makeOverview();
 makeBreakdown();
@@ -48,16 +47,8 @@ function makeOverview() {
 function makeBreakdown() {
     const breakdownSection = document.getElementById('breakdown');
 
-    let catSums = new Array(categories.length).fill(0);
-    let sumAll;
-    for (const item of thisMonthExpenses) {
-        if (catSums[Number(item.category)]) {
-            catSums[Number(item.category)] += Number(item.amount);
-        } else {
-            catSums[Number(item.category)] = Number(item.amount);
-        }
-    }
-    sumAll = catSums.reduce((acc, curr) => acc + curr, 0);
+    let catSums = sumCurrMonthExpByCategory(thisMonthExpenses);
+    let sumAll = catSums.reduce((acc, curr) => acc + curr, 0);
 
     for (let i = 0; i < categories.length; i++) {
         const width = (catSums[i] / sumAll * 400);
@@ -78,18 +69,4 @@ function createCategoryRow(catSum, category, width) {
     );
 
     return row;
-}
-
-function currMonthBudget(month, year) {
-    return [...budgets.values()].filter((val) => {
-        let currDate = new Date(val.date);
-        return currDate.getFullYear() === year && currDate.getMonth() === month;
-    })[0];
-}
-
-function currMonthExpenses(month, year) {
-    return [...expenses.values()].filter((val) => {
-        let currDate = new Date(val.date);
-        return currDate.getFullYear() === year && currDate.getMonth() === month;
-    });
 }
