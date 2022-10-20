@@ -92,13 +92,11 @@ function fillBudgetReportColumns(totalMo, budgetMo) {
     let savingsMo = [0, 0, 0, 0];
     for (let i = 0; i < 3; i++) {
         if (budgetMo[i]) {
-            let savings = budgetMo[i].income - budgetMo[i].budget;
+            savingsMo[i] = budgetMo[i].income - totalMo[i];
             let remain = budgetMo[i].budget - totalMo[i]
             if (remain < 0) {
                 overrunMo[i] = Math.abs(remain);
-                savings = budgetMo[i].income - totalMo[i];
             }
-            savingsMo[i] = savings;
         }
     }
     totalMo[3] = totalMo[0] + totalMo[1] + totalMo[2];
