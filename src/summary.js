@@ -9,27 +9,51 @@ const budgets = getData(STORAGE_BUDGETS_KEY);
 
 const today = new Date();
 
-const thisMonthExp = currMonthExpenses(expenses, today.getMonth(), today.getFullYear());
-const lastMonthExp = currMonthExpenses(expenses, today.getMonth() - 1, today.getFullYear());
-const prevMonthExp = currMonthExpenses(expenses, today.getMonth() - 2, today.getFullYear());
-
-const thisMonthBudget = currMonthBudget(budgets, today.getMonth(), today.getFullYear());
-const lastMonthBudget = currMonthBudget(budgets, today.getMonth() - 1, today.getFullYear());
-const prevMonthBudget = currMonthBudget(budgets, today.getMonth() - 2, today.getFullYear());
-
 const thead = document.querySelector('thead > tr');
 const tbody = document.querySelector('tbody');
 
+const prevBtn = document.getElementById('previous');
+const nextBtn = document.getElementById('next');
+
 makeSummary();
 
+prevBtn.addEventListener('click', onPreviousClick);
+nextBtn.addEventListener('click', onNextClick);
+
+
+function onPreviousClick(event) {
+    event.preventDefault;
+
+    today.setMonth(today.getMonth() - 2);
+    tbody.replaceChildren();
+
+    makeSummary();
+}
+
+function onNextClick(event) {
+    event.preventDefault;
+
+    today.setMonth(today.getMonth());
+    tbody.replaceChildren();
+
+    makeSummary();
+}
 
 function makeSummary() {
-    createMonthHeads(today);
-    thead.appendChild(e('th', {}, "Total"));
+    const thisMonthExp = currMonthExpenses(expenses, today.getMonth(), today.getFullYear());
+    const lastMonthExp = currMonthExpenses(expenses, today.getMonth() - 1, today.getFullYear());
+    const prevMonthExp = currMonthExpenses(expenses, today.getMonth() - 2, today.getFullYear());
+
+    const thisMonthBudget = currMonthBudget(budgets, today.getMonth(), today.getFullYear());
+    const lastMonthBudget = currMonthBudget(budgets, today.getMonth() - 1, today.getFullYear());
+    const prevMonthBudget = currMonthBudget(budgets, today.getMonth() - 2, today.getFullYear());
+
+    fillMonthHeads(today);
 
     const sumsMo1 = sumCurrMonthExpByCategory(prevMonthExp);
     const sumsMo2 = sumCurrMonthExpByCategory(lastMonthExp);
     const sumsMo3 = sumCurrMonthExpByCategory(thisMonthExp);
+
 
     fillMonthColumns(sumsMo1, sumsMo2, sumsMo3);
 
@@ -40,12 +64,12 @@ function makeSummary() {
     fillBudgetReportColumns([totalMo1, totalMo2, totalMo3], [prevMonthBudget, lastMonthBudget, thisMonthBudget])
 }
 
-function createMonthHeads(date) {
+function fillMonthHeads(date) {
     date.setMonth(date.getMonth() - 2);
 
-    for (let i = 0; i < 3; i++) {
-        const col = e('th', {}, date.toLocaleString('en-us', { month: 'short' }));
-        thead.appendChild(col);
+    for (let i = 2; i <= 4; i++) {
+        const th = thead.querySelector(`th:nth-child(${i})`)
+        th.textContent = date.toLocaleString('en-us', { month: 'short' });
 
         date.setMonth(date.getMonth() + 1);
     }
@@ -64,8 +88,8 @@ function fillBudgetReportColumns(totalMo, budgetMo) {
     const overrun = document.querySelector('.overrun');
     const savings = document.querySelector('.savings');
 
-    let overrunMo = [0, 0, 0];
-    let savingsMo = [0, 0, 0];
+    let overrunMo = [0, 0, 0, 0];
+    let savingsMo = [0, 0, 0, 0];
     for (let i = 0; i < 3; i++) {
         if (budgetMo[i]) {
             let savings = budgetMo[i].income - budgetMo[i].budget;
@@ -77,18 +101,17 @@ function fillBudgetReportColumns(totalMo, budgetMo) {
             savingsMo[i] = savings;
         }
     }
-    const totalRow = createSummaryRow(totalMo[0], totalMo[1], totalMo[2]);
+    totalMo[3] = totalMo[0] + totalMo[1] + totalMo[2];
+    overrunMo[3] = overrunMo[0] + overrunMo[1] + overrunMo[2];
+    savingsMo[3] = savingsMo[0] + savingsMo[1] + savingsMo[2];
 
-    const overrunRow = createSummaryRow(overrunMo[0], overrunMo[1], overrunMo[2]);
-
-    const savingsRow = createSummaryRow(savingsMo[0], savingsMo[1], savingsMo[2]);
-
-    for (let i = 0; i < totalRow.length; i++) {
-        total.appendChild(totalRow[i]);
-        overrun.appendChild(overrunRow[i]);
-        savings.appendChild(savingsRow[i]);
+    for (let i = 0; i < 4; i++) {
+        let el = 'td';
+        if (i == 3) { el = 'th'; }
+        total.querySelector(`${el}:nth-child(${i + 2}) span`).textContent = totalMo[i];
+        overrun.querySelector(`${el}:nth-child(${i + 2}) span`).textContent = overrunMo[i];
+        savings.querySelector(`${el}:nth-child(${i + 2}) span`).textContent = savingsMo[i];
     }
-
 }
 
 
@@ -102,16 +125,4 @@ function createCategoryRow(catName, amount, total) {
     );
 
     return row;
-}
-
-function createSummaryRow(val1, val2, val3) {
-    const sum = val1 + val2 + val3;
-    const rowEls = [
-        td(e('span', { className: 'currency' }, val1)),
-        td(e('span', { className: 'currency' }, val2)),
-        td(e('span', { className: 'currency' }, val3)),
-        e('th', {}, e('span', { className: 'currency' }, sum))
-    ]
-
-    return rowEls
 }
