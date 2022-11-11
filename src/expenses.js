@@ -20,6 +20,7 @@ form.querySelector('[type="reset"]').addEventListener('click', onFormCancel);
 
 tbody.addEventListener('click', onRowBtnClick);
 
+//sortiraneto moje da stane s obhojdane i vmukvane na element i insertBefore v dom-a 
 function onFormSubmit(event) {
     event.preventDefault();
 
@@ -79,6 +80,7 @@ function onRowBtnClick(event) {
 
 function editExpense(row) {
     const expense = store.get(row.id);
+    //query selectors e po bavna operaciq i po dobre da pazq referenciq v drugi sluchai 
     form.querySelector('[name="date"]').value = dateToString(new Date(expense.date));
     form.querySelector('[name="name"]').value = expense.name;
     form.querySelector('[name="category"]').value = expense.category;

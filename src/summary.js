@@ -7,6 +7,7 @@ import {
 const expenses = getData(STORAGE_EXPENSES_KEY);
 const budgets = getData(STORAGE_BUDGETS_KEY);
 
+//da pazq 2 promenlivi za meseca i godinata vmesto da rabotq s data
 const today = new Date();
 
 const thead = document.querySelector('thead > tr');

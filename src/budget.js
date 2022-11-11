@@ -30,6 +30,7 @@ function onFormSubmit(event) {
 
         const id = editMode ? currId : getId();
         const date = srtToDate(data.month);
+        //proverka dali ima biudget s tozi mesec veche
 
         const budget = {
             id,
